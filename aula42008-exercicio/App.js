@@ -127,7 +127,8 @@ const estilos = StyleSheet.create({
   },
   cartaoImportante: { 
     backgroundColor: "#dbeafe", 
-    borderColor: "#60a5fa" },
+    borderColor: "#60a5fa" 
+  },
   textoCartao: { 
     fontWeight: "600" 
   },

@@ -33,9 +33,8 @@ export default function App() {
           </View>
 
           <Text style={estilos.rotulo}>Próximas atividades</Text>
-          <View style={estilos.listaContainer}>
+          <View>
             <ScrollView
-              contentContainerStyle={estilos.listaConteudo}
               showsVerticalScrollIndicator={false}
             >
               <View style={estilos.cartao}>
