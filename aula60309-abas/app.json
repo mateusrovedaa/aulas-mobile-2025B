@@ -1,0 +1,8 @@
+{
+  "name": "aula0309",
+  "slug": "aula0309",
+  "scheme": "aula0309",
+  "plugins": [
+    "expo-router"
+  ]
+}
