@@ -1,34 +1,110 @@
-// importações
 import { useState } from "react";
-import { TextInput, Text, Button } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  View,
+  TextInput,
+  Button,
+  Text,
+  StyleSheet,
+} from "react-native";
 
 export default function App() {
-  // variável de estado chamada "n", que começa em 0
-  // "setN" é a função para atualizar esse valor
-  const [n, setN] = useState(0);
+  const [num1, setNum1] = useState(0);
+  const [num2, setNum2] = useState(0);
+  const [resultado, setResultado] = useState(0);
 
-  // exemplo 2
-  const [nome, setNome] = useState("");
+  function somar(n1, n2) {
+    return n1 + n2;
+  }
+
+  function subtrair() {
+    const n1 = parseFloat(num1);
+    const n2 = parseFloat(num2);
+    if (!isNaN(n1) && !isNaN(n2)) {
+      setResultado(n1 - n2);
+    }
+  }
+
+  function multiplicar() {
+    const n1 = parseFloat(num1);
+    const n2 = parseFloat(num2);
+    if (!isNaN(n1) && !isNaN(n2)) {
+      setResultado(n1 * n2);
+    }
+  }
+
+  function dividir() {
+    const n1 = parseFloat(num1);
+    const n2 = parseFloat(num2);
+    if (n2 === 0) {
+      setResultado("Erro: Divisão por zero");
+      return;
+    }
+    if (!isNaN(n1) && !isNaN(n2)) {
+      setResultado(n1 / n2);
+    }
+  }
 
   return (
-    <SafeAreaView style={{ padding: 16 }}>
-      <Text style={{ fontSize: 24, marginBottom: 8 }}>Valor: {n}</Text>
-      {/* Botão que, ao ser pressionado, chama uma Arrow Function para somar 1 */}
-      <Button title="Somar +1" onPress={() => setN(n + 1)} />
-      
-      {/* Exemplo 2 */}
-      <Text style={{ marginBottom: 8 }}>Como você se chama?</Text>
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.titulo}>Calculadora Simples</Text>
+
       <TextInput
-        value={nome}
-        onChangeText={setNome}
-        placeholder="Digite seu nome"
-        style={{
-          borderWidth: 1, borderColor: "#ccc", borderRadius: 8,
-          padding: 10, marginBottom: 8
-        }}
+        style={styles.input}
+        placeholder="Primeiro número"
+        value={num1}
+        onChangeText={setNum1}
+        keyboardType="numeric"
       />
-      <Text>Olá, {nome || "visitante"}!</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Segundo número"
+        value={num2}
+        onChangeText={setNum2}
+        keyboardType="numeric"
+      />
+
+      <View style={styles.botoesContainer}>
+        <Button title=" + " onPress={() => setResultado(somar(parseFloat(num1), parseFloat(num2)))} />
+        <Button title=" - " onPress={subtrair} />
+        <Button title=" * " onPress={multiplicar} />
+        <Button title=" / " onPress={dividir} />
+      </View>
+
+      <Text style={styles.resultado}>Resultado: {resultado}</Text>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    justifyContent: "center",
+  },
+  titulo: {
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#cccccc",
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  botoesContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginVertical: 20,
+  },
+  resultado: {
+    fontSize: 28,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginTop: 20,
+  },
+});
