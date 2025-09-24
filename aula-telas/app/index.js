@@ -14,6 +14,9 @@ export default function Home() {
       <Link href="/segunda" asChild>
         <Button title="Ir para a 2ª tela" />
       </Link>
+      <Link href="/sqlite" asChild>
+        <Button title="Ir para a 3ª tela" />
+      </Link>
     </View>
   );
 }
