@@ -2,23 +2,20 @@ import { View, Text, Button, StyleSheet, FlatList, TextInput } from "react-nativ
 import { useState } from "react";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import * as SQLite from 'expo-sqlite';
+import { db, initDb } from "../data/db";
 
-const db = SQLite.openDatabaseSync('tarefas.db');
-db.execSync(`
-  PRAGMA journal_mode = WAL;
-  CREATE TABLE IF NOT EXISTS tarefas (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome TEXT NOT NULL
-  );
-`);
+initDb();
 
 function getTarefas(){
-  return db.getAllSync('SELECT * FROM TAREFAS');
+  return db.getAllSync('SELECT * FROM tarefas');
 }
 
 function insertTarefa(nome){
   db.runSync('INSERT INTO tarefas (nome) VALUES (?)', [nome]);
+}
+
+function deleteTarefa(id) {
+  db.runSync('DELETE FROM tarefas WHERE id = ?', [id]);
 }
 
 export default function sqlite() {
@@ -34,6 +31,11 @@ export default function sqlite() {
 
   function carregarTarefas() {
     setTarefas(getTarefas());
+  }
+
+  function excluirTarefa(id) {
+    deleteTarefa(id);
+    carregarTarefas();
   }
 
   return (
@@ -55,10 +57,12 @@ export default function sqlite() {
       <FlatList
         data={tarefas}
         keyExtractor={(item) => String(item.id)}
-        renderItem={({ item }) => 
-        <Text style={estilos.textoItem}>
-          - {item.nome}
-        </Text>}
+        renderItem={({ item }) => (
+          <View style={estilos.itemLinha}>
+            <Text style={estilos.textoItem}>- {item.nome}</Text>
+            <Button title="x" color="#b91c1c" onPress={() => excluirTarefa(item.id)} />
+          </View>
+        )}
       />
 
       <View style={estilos.rodape}>
@@ -85,20 +89,28 @@ const estilos = StyleSheet.create({
     marginBottom: 8, 
     gap: 8 
   },
-  campoTexto: { 
-    flex: 1, 
-    borderWidth: 1, 
-    borderColor: "#ccc", 
-    borderRadius: 8, 
-    paddingHorizontal: 12, 
-    height: 44 
+  campoTexto: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    height: 44,
   },
   textoItem: { 
     fontSize: 16, 
     paddingVertical: 6 
   },
+  itemLinha: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 4,
+  },
   rodape: { 
     flexDirection: "row", 
-    gap: 8
+    gap: 8, 
+    marginTop: 8 
   },
 });
+
