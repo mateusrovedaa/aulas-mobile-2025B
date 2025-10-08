@@ -1,5 +1,5 @@
 import { View, Text, Button, StyleSheet, FlatList, TextInput } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { db, initDb } from "../data/db";
@@ -63,6 +63,13 @@ export default function sqlite() {
     setEditandoId(null);
     carregarTarefas();
   }
+
+  // Carrega as tarefas quando a tela abre
+  useEffect(() => {
+    // Executa uma única vez após o primeiro render
+    carregarTarefas();
+  }, []);
+
 
   return (
     <SafeAreaView style={estilos.container}>
