@@ -18,9 +18,19 @@ function deleteTarefa(id) {
   db.runSync('DELETE FROM tarefas WHERE id = ?', [id]);
 }
 
+function getTarefaById(id) {
+  const [tarefa] = db.getAllSync('SELECT * FROM tarefas WHERE id = ?', [id]);
+  return tarefa;
+}
+
+function updateTarefa(id, nome) {
+  db.runSync('UPDATE tarefas SET nome = ? WHERE id = ?', [nome, id]);
+}
+
 export default function sqlite() {
   const [texto, setTexto] = useState("");
   const [tarefas, setTarefas] = useState([]);
+  const [editandoId, setEditandoId] = useState(null);
 
   function salvarTarefa() {
     const nome = texto.trim();
@@ -38,6 +48,22 @@ export default function sqlite() {
     carregarTarefas();
   }
 
+  function editarTarefa(id) {
+    const tarefa = getTarefaById(id);
+    if (!tarefa) return;
+    setTexto(tarefa.nome);
+    setEditandoId(id);
+  }
+
+  function atualizarTarefa() {
+    const nome = texto.trim();
+    if (!nome || !editandoId) return;
+    updateTarefa(editandoId, nome);
+    setTexto("");
+    setEditandoId(null);
+    carregarTarefas();
+  }
+
   return (
     <SafeAreaView style={estilos.container}>
       <Text style={estilos.titulo}>Tarefas</Text>
@@ -49,7 +75,8 @@ export default function sqlite() {
           placeholder="Nova tarefa..."
           style={estilos.campoTexto}
         />
-        <Button title="Salvar" onPress={salvarTarefa} />
+        <Button title="Salvar" onPress={salvarTarefa} disabled={!!editandoId} /> /* converte para boolean */
+        <Button title="Atualizar" onPress={atualizarTarefa} disabled={!editandoId} />
       </View>
 
       <Button title="Carregar tarefas" onPress={carregarTarefas} />
@@ -60,7 +87,10 @@ export default function sqlite() {
         renderItem={({ item }) => (
           <View style={estilos.itemLinha}>
             <Text style={estilos.textoItem}>- {item.nome}</Text>
-            <Button title="x" color="#b91c1c" onPress={() => excluirTarefa(item.id)} />
+            <View style={estilos.acoesLinha}>
+              <Button title="E" onPress={() => editarTarefa(item.id)} />
+              <Button title="x" color="#b91c1c" onPress={() => excluirTarefa(item.id)} />
+            </View>
           </View>
         )}
       />
@@ -106,6 +136,10 @@ const estilos = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingVertical: 4,
+  },
+  acoesLinha: {
+    flexDirection: "row",
+    gap: 4,
   },
   rodape: { 
     flexDirection: "row", 
