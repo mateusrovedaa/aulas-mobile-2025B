@@ -17,6 +17,9 @@ export default function Home() {
       <Link href="/sqlite" asChild>
         <Button title="Ir para a 3ª tela" />
       </Link>
+      <Link href="/api" asChild>
+        <Button title="APIs" />
+      </Link>
     </View>
   );
 }
