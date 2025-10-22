@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Text, FlatList, ActivityIndicator, Button, TextInput, Pressable, Alert } from "react-native";
+import { View, Text, FlatList, ActivityIndicator, Button, TextInput, Pressable, Alert, StyleSheet } from "react-native";
 
 export default function PostsScreen() {
   const [data, setData] = useState([]);
