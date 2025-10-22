@@ -131,7 +131,7 @@ const estilos = StyleSheet.create({
   },
   titulo: { 
     fontSize: 18, 
-    fontWeight: "600", 
+    fontWeight: "500", 
     marginBottom: 8 
   },
   linhaEntrada: { 
