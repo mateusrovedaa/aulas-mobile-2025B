@@ -27,8 +27,8 @@ export default function PostsScreen() {
     });
     const created = await res.json();
     if (created) {
-     await load();
-     setSelectedId(created.id || null);
+      await load();
+      setSelectedId(created.id || null);
     } else {
       Alert.alert("Falha no POST", `Status: ${res.status}`);
     }
@@ -44,7 +44,7 @@ export default function PostsScreen() {
       body: JSON.stringify({ id: selectedId, title, body, userId: 1 }),
     });
     if (res.ok) {
-     await load();
+      await load();
     } else {
       Alert.alert("Falha no PUT", `Status: ${res.status}`);
     }
@@ -65,48 +65,102 @@ export default function PostsScreen() {
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.header}>Posts (JSONPlaceholder)</Text>
+
       <Button title="Carregar posts (GET)" onPress={load} />
 
-      <View>
-        <Text>ID selecionado: {selectedId ?? "-"}</Text>
+      <Text style={{ marginTop: 8 }}>ID selecionado: {selectedId ?? "-"}</Text>
 
-        <Text>Título</Text>
-        <TextInput value={title} onChangeText={setTitle} />
+      <Text style={{ marginTop: 8 }}>Título</Text>
+      <TextInput
+        value={title}
+        onChangeText={setTitle}
+        style={styles.input}
+        placeholder="Digite o título"
+      />
 
-        <Text>Corpo</Text>
-        <TextInput value={body} onChangeText={setBody} multiline />
+      <Text style={{ marginTop: 8 }}>Corpo</Text>
+      <TextInput
+        value={body}
+        onChangeText={setBody}
+        style={[styles.input, { minHeight: 64, textAlignVertical: "top" }]}
+        placeholder="Digite o corpo"
+        multiline
+      />
 
-        <Button title="Criar (POST)" onPress={createPost} />
-        <Button title="Atualizar (PUT)" onPress={updatePost} />
-        <Button title="Excluir (DELETE)" onPress={deletePost} />
+      <View style={styles.buttonRow}>
+        <View style={{ flex: 1, marginRight: 6 }}>
+          <Button title="Criar (POST)" onPress={createPost} disabled={loading} />
+        </View>
+        <View style={{ flex: 1, marginLeft: 6 }}>
+          <Button title="Atualizar (PUT)" onPress={updatePost} disabled={loading || !selectedId} />
+        </View>
+      </View>
+
+      <View style={{ marginTop: 12 }}>
+        <Button title="Excluir (DELETE)" onPress={deletePost} disabled={loading || !selectedId} />
       </View>
 
       {loading ? (
-        <View>
+        <View style={{ alignItems: "center", marginVertical: 16 }}>
           <ActivityIndicator />
-          <Text>Carregando…</Text>
+          <Text style={{ marginTop: 8 }}>Carregando…</Text>
         </View>
       ) : (
         <FlatList
           data={data}
           keyExtractor={(item) => String(item.id)}
-          renderItem={({ item }) => (
-          <Pressable
-            onPress={() => {
-              setSelectedId(item.id);
-              setTitle(item.title);
-              setBody(item.body);
-            }}
-          >
-            <View>
-              <Text>- {item.id} | {item.title}</Text>
-            </View>
-          </Pressable>
-          )}
           ListEmptyComponent={<Text>Nenhum post carregado.</Text>}
+          renderItem={({ item }) => {
+            const isSelected = item.id === selectedId;
+            return (
+              <Pressable
+                onPress={() => {
+                  setSelectedId(item.id);
+                  setTitle(item.title);
+                  setBody(item.body);
+                }}
+                style={[styles.item, isSelected && styles.itemSelected]}
+              >
+                <Text style={{ fontWeight: "700" }}>
+                  {item.id}. {item.title}
+                </Text>
+                <Text style={{ color: "#555" }}>{item.body}</Text>
+              </Pressable>
+            );
+          }}
         />
       )}
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { 
+    flex: 1, 
+    backgroundColor: "#fff", 
+    padding: 16 
+  },
+  header: { 
+    fontSize: 18, 
+    fontWeight: "700", 
+    marginBottom: 8 
+  },
+  input: { 
+    borderWidth: 1, 
+    borderColor: "#ddd", 
+    padding: 8, 
+    borderRadius: 6 
+  },
+  buttonRow: { 
+    flexDirection: "row", 
+    marginTop: 12 
+  },
+  item: { 
+    paddingVertical: 10 
+  },
+  itemSelected: { 
+    backgroundColor: "#eef" 
+  },
+});
