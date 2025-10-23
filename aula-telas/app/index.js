@@ -17,6 +17,9 @@ export default function Home() {
       <Link href="/sqlite" asChild>
         <Button title="Ir para a 3ª tela" />
       </Link>
+      <Link href="/pokemon" asChild>
+        <Button title="Pokemon" />
+      </Link>
       <Link href="/api-sqlite" asChild>
         <Button title="API (código criado do sqlite)" />
       </Link>
