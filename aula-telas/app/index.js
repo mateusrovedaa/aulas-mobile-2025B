@@ -20,6 +20,9 @@ export default function Home() {
       <Link href="/pokemon" asChild>
         <Button title="Pokemon" />
       </Link>
+      <Link href="/items" asChild>
+        <Button title="Itens" />
+      </Link>
       <Link href="/api-sqlite" asChild>
         <Button title="API (código criado do sqlite)" />
       </Link>

@@ -11,6 +11,15 @@ async function getPokemon(pokemon){
     return null;
 }
 
+async function cadastra(name, description, price){
+    const resposta = await fetch("http://177.44.248.50:8080/items", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, description, price }),
+    });
+    console.log(resposta);
+}
+
 getPokemon();
 
 export default function Pokemon() {
@@ -24,6 +33,14 @@ export default function Pokemon() {
         setPokemonImage(poke.sprites?.front_default || null);
     }
 
+    async function salvar(){
+        const nome = "Garrafinha";
+        const preco = 60;
+        const descricao = "Algo para colocar líquidos";
+        cadastra(nome, descricao, preco);
+        console.log(JSON.stringify({ nome, descricao, preco }))
+    }
+
     // useEffect(() => {
     //     carregarPokemon();
     //   }, []);
@@ -35,6 +52,7 @@ export default function Pokemon() {
                 onChangeText={setPokemonPesquisar}
             />
             <Button title="Pesquisar" onPress={carregarPokemon}/>
+            <Button title="Salvar" onPress={salvar}/>
             <Text>{pokemon}</Text>
             <Image
                 source={{ uri: pokemonImage }}

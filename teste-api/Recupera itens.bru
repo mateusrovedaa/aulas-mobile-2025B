@@ -1,0 +1,23 @@
+meta {
+  name: Recupera itens
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://177.44.248.50:8080/items
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Bola quadrada",
+    "price": 50
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
