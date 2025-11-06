@@ -10,6 +10,14 @@ async function getItems(){
     }
 }
 
+async function getItemById(id){
+    const resposta = await fetch(`http://177.44.248.50:8080/items/${id}`);
+    if (resposta.ok) {
+      const payload = await resposta.json();
+      return payload;
+    }
+}
+
 async function cadastra(name, description, price){
     const resposta = await fetch(`http://177.44.248.50:8080/items`, {
       method: "POST",
@@ -19,11 +27,29 @@ async function cadastra(name, description, price){
     return resposta.ok;
 }
 
+async function edita(id, name, description, price){
+    const resposta = await fetch(`http://177.44.248.50:8080/items/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, description, price }),
+    });
+    return resposta.ok;
+}
+
+async function apaga(id){
+    const resposta = await fetch(`http://177.44.248.50:8080/items/${id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    });
+    return resposta.ok;
+}
+
 export default function Items() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [items, setItems] = useState([]);
+  const [editingId, setEditingId] = useState(null);
 
   async function carregarItems(){
     const lista = await getItems();
@@ -38,6 +64,32 @@ export default function Items() {
       setPrice("");
       await carregarItems();
     }
+  }
+
+  async function atualizar(){
+    if (!editingId) return;
+    const ok = await edita(editingId, name, description, Number(price));
+    if (ok) {
+      setName("");
+      setDescription("");
+      setPrice("");
+      setEditingId(null);
+      await carregarItems();
+    }
+  }
+
+  async function editarTarefa(id){
+    const item = await getItemById(id);
+    if (!item) return;
+    setName(item.name);
+    setDescription(item.description);
+    setPrice(String(item.price));
+    setEditingId(id);
+  }
+
+  async function excluir(id){
+    const ok = await apaga(id);
+    if (ok) await carregarItems();
   }
 
   useEffect(() => {
@@ -66,16 +118,26 @@ export default function Items() {
         style={estilos.input}
       />
 
-      <Button title="Salvar" onPress={salvar} />
+      <View style={estilos.linhaEntrada}>
+        <Button title="Salvar" onPress={salvar} disabled={!!editingId} />
+        <Button title="Atualizar" onPress={atualizar} disabled={!editingId} />
+      </View>
       <View style={{ height: 8 }} />
 
       <Button title="Recarregar lista" onPress={carregarItems} />
 
       <FlatList
         data={items}
+        keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
           <View style={estilos.item}>
-            <Text style={estilos.itemTitulo}>{item.name}</Text>
+            <View style={estilos.itemHeader}>
+              <Text style={estilos.itemTitulo}>{item.name}</Text>
+              <View style={estilos.acoesLinha}>
+                <Button title="E" onPress={() => editarTarefa(item.id)} />
+                <Button title="x" color="#b91c1c" onPress={() => excluir(item.id)} />
+              </View>
+            </View>
             <Text>{item.description}</Text>
             <Text>Preço: {String(item.price)}</Text>
           </View>
@@ -98,6 +160,11 @@ const estilos = StyleSheet.create({
     paddingVertical: 8,
     marginBottom: 8
   },
+  linhaEntrada: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8
+  },
   item: {
     borderWidth: 1,
     borderColor: "#ddd",
@@ -106,8 +173,18 @@ const estilos = StyleSheet.create({
     marginHorizontal: 0,
     marginBottom: 10
   },
+  itemHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 4
+  },
   itemTitulo: {
     fontWeight: "bold",
     marginBottom: 4
+  },
+  acoesLinha: {
+    flexDirection: "row",
+    gap: 4
   }
 });
